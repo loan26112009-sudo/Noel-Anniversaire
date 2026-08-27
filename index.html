@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liste de Noël & Anniversaire — Loan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface-2: #fbfbfd;
+    --text: #1d1d1f;
+    --text-2: #6e6e73;
+    --text-3: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --green: #34c759;
+    --red: #ff3b30;
+    --orange: #ff9500;
+    --border: rgba(0,0,0,0.08);
+    --shadow: 0 2px 20px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 40px rgba(0,0,0,0.12);
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  nav .logo {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  nav .logo span { color: var(--accent); }
+
+  nav .total-nav {
+    font-size: 13px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+
+  nav .total-nav strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 120px 24px 60px;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 72px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 19px;
+    color: var(--text-2);
+    line-height: 1.5;
+    font-weight: 400;
+    max-width: 500px;
+    margin: 0 auto 32px;
+  }
+
+  .hero .budget-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  .hero .budget-pill .price-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* GRID */
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .card.featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* CARD IMAGE */
+  .card-image {
+    background: linear-gradient(135deg, #f0f0f2 0%, #e5e5ea 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card.featured .card-image {
+    min-height: 420px;
+  }
+
+  .card-image .product-emoji {
+    font-size: 80px;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.15));
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-image .product-emoji {
+    transform: scale(1.08) translateY(-4px);
+  }
+
+  .card-image .badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--red);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+
+  .card-image .badge.green { background: var(--green); }
+  .card-image .badge.orange { background: var(--orange); }
+  .card-image .badge.blue { background: var(--accent); }
+
+  /* CARD BODY */
+  .card-body {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card.featured .card-body { padding: 48px; }
+
+  .card-category {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .card.featured .card-title { font-size: 36px; }
+
+  .card-subtitle {
+    font-size: 15px;
+    color: var(--text-3);
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+
+  .card-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-2);
+    margin-bottom: 24px;
+    flex-grow: 1;
+  }
+
+  /* SPECS */
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .spec-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  /* PRO/CON */
+  .pro-con {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .pro-list, .con-list {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+
+  .pro-list .list-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .con-list .list-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--orange);
+    margin-bottom: 8px;
+  }
+
+  .pro-list ul, .con-list ul {
+    list-style: none;
+  }
+
+  .pro-list ul li, .con-list ul li {
+    font-size: 13px;
+    color: var(--text-2);
+    padding: 3px 0;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.4;
+  }
+
+  .pro-list ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  .con-list ul li::before {
+    content: '!';
+    position: absolute;
+    left: 0;
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* CARD FOOTER */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .price-block .price {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .card.featured .price-block .price { font-size: 36px; }
+
+  .price-block .price-note {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.02);
+  }
+
+  .btn.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+
+  .btn.secondary:hover {
+    background: rgba(0,113,227,0.07);
+  }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    background: linear-gradient(135deg, #ff3b30 0%, #c0392b 100%);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: white;
+    margin: 0 24px 20px;
+    max-width: calc(1100px - 48px);
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+  }
+
+  .alert-banner .alert-icon { font-size: 28px; }
+
+  .alert-banner .alert-text strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .alert-banner .alert-text span {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  /* NOTE BANNER */
+  .note-banner {
+    background: rgba(0,113,227,0.07);
+    border: 1px solid rgba(0,113,227,0.15);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .note-banner strong { color: var(--accent); }
+
+  /* TOTAL SECTION */
+  .total-section {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+  }
+
+  .total-card {
+    background: var(--text);
+    border-radius: var(--radius);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .total-card .total-left h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 6px;
+  }
+
+  .total-card .total-left p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .total-card .total-right {
+    font-size: 52px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -2px;
+  }
+
+  .total-card .total-right span {
+    font-size: 24px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* TWO COL */
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .card.featured {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .card.featured {
+      grid-template-columns: 1fr;
+    }
+    .pro-con {
+      grid-template-columns: 1fr;
+    }
+    .total-card {
+      padding: 28px;
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  /* ANIMATE IN */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card, .alert-banner, .total-card {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.2s; }
+
+  /* MAC MINI SPECIFIC */
+  .mac-bg {
+    background: linear-gradient(135deg, #e8e8ed 0%, #d1d1d6 100%);
+  }
+
+  .shure-bg {
+    background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+  }
+
+  .ugreen-bg {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Liste Noël <span>&</span> Anniversaire</div>
+  <div class="total-nav">Anniversaire ~2 774 € &nbsp;·&nbsp; Noël ~938 €</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">🎄 Liste de Noël — Loan Lutz</div>
+  <h1>Liste Noël & Anniversaire.</h1>
+  <p>Chaque produit sélectionné pour débloquer le niveau suivant — montage cinématique, son broadcast, workflow pro.</p>
+  <div class="budget-pill">
+    Anniversaire ~2 774 € &nbsp;·&nbsp; <span class="price-val">Noël ~938 €</span>
+  </div>
+</div>
+
+
+
+<!-- GRID -->
+<div class="grid">
+
+  <!-- MAC MINI — FEATURED -->
+  <div class="card featured" onclick="window.open('https://www.apple.com/fr/shop/buy-mac/mac-mini','_blank')">
+    <div class="card-image mac-bg" style="padding:0;background:#fff;">
+      <div class="badge">🔴 Précommande</div>
+      <img src="macmini.png" alt="Mac mini M5 Pro" style="width:100%;height:100%;object-fit:contain;padding:48px;background:#f0f0f2;"/>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="card-category">Ordinateur principal</div>
+        <div class="card-title">Mac mini M5 Pro</div>
+        <div class="card-subtitle">18 cœurs CPU · 20 cœurs GPU · 24 Go RAM · 1 To SSD · Thunderbolt 5</div>
+        <div class="card-desc">
+          Mon PC actuel bug 100 fois trop — montage, stream, voc, tout rame. Le Mac mini M5 Pro c'est la fin de tous ces problèmes. Montage S-Log3 fluide, exports rapides, stream stable. Une vraie machine de guerre.<br><br>
+          <strong>RAM : c'est le seul truc qu'on peut augmenter.</strong> Le stockage est figé à vie. Si le prix vous dérange pas, prenez 48 Go — avec ça la machine tient facilement <strong>10 ans</strong>. Avec 24 Go elle tient très bien aussi, mais 48 Go c'est l'assurance tous risques.<br><br>
+          <em>⌨️ Mon clavier actuel n'a pas les touches Apple (Command, Option…) donc probablement pas 100% compatible. Ma souris par contre c'est bon.</em>
+        </div>
+        <div class="note-banner" style="background:rgba(255,59,48,0.08);border-color:rgba(255,59,48,0.2);margin-bottom:16px;">
+          <strong style="color:#ff3b30;">⚠️ Si vous commandez pas avant le 22 septembre, le prix risque d'augmenter.</strong> Apple l'a déjà fait avec le M4 — une config a pris +250 € du jour au lendemain.
+        </div>
+        <div class="specs">
+          <span class="spec-pill">M5 Pro 18c CPU</span>
+          <span class="spec-pill">GPU 20 cœurs</span>
+          <span class="spec-pill">24 Go RAM</span>
+          <span class="spec-pill">1 To SSD</span>
+          <span class="spec-pill">Thunderbolt 5 ×3</span>
+          <span class="spec-pill">Wi-Fi 7</span>
+          <span class="spec-pill">3 écrans externes</span>
+        </div>
+        <button onclick="event.stopPropagation();var d=document.getElementById('mac-specs');d.style.display=d.style.display==='none'?'block':'none';this.textContent=d.style.display==='none'?'Voir les caractéristiques +':'Masquer −';" style="background:none;border:1.5px solid var(--border);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;margin-bottom:16px;">Voir les caractéristiques +</button>
+        <div id="mac-specs" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:20px;margin-bottom:16px;font-size:13px;color:var(--text-2);line-height:1.8;">
+          <strong style="color:var(--text);display:block;margin-bottom:8px;">Matériel</strong>
+          CPU 18 cœurs · GPU 20 cœurs · Neural Engine 16 cœurs<br>
+          24 Go de mémoire unifiée<br>
+          1 To de stockage SSD<br>
+          2.5 Gigabit Ethernet<br>
+          Deux ports USB-C · Prise casque 3,5 mm<br>
+          Trois ports Thunderbolt 5 · Un port HDMI · Un port Gigabit Ethernet<br>
+          Prise en charge de trois écrans externes<br>
+          Kit d'accessoires inclus<br>
+          <strong style="color:var(--text);display:block;margin-top:12px;margin-bottom:8px;">Logiciels inclus</strong>
+          Photos · iMovie · GarageBand · Pages · Numbers · Keynote · macOS<br>
+          <strong style="color:var(--text);display:block;margin-top:12px;margin-bottom:8px;">Livraison</strong>
+          Livraison gratuite entre le 22/09 et le 25/09
+        </div>
+        <div class="pro-con">
+          <div class="pro-list">
+            <div class="list-title">✦ Points forts</div>
+            <ul>
+              <li>Montage S-Log3 enfin fluide</li>
+              <li>Export rapide même en 4K</li>
+              <li>Silent — zéro bruit de ventilo</li>
+              <li>Stream stable sans drop</li>
+              <li>10 ans de durée de vie estimée</li>
+            </ul>
+          </div>
+          <div class="con-list">
+            <div class="list-title">⚠ Points faibles</div>
+            <ul>
+              <li>RAM non upgradable après achat</li>
+              <li>Stockage interne limité à 1 To</li>
+              <li>Livraison le 22 sept. seulement</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="price-block">
+          <div class="price">2 549 €</div>
+          <div class="price-note">apple.com/fr · Livraison gratuite entre le 22/09 et le 25/09</div>
+        </div>
+        <a href="https://www.apple.com/fr/shop/buy-mac/mac-mini" target="_blank" class="btn" onclick="event.stopPropagation()">Précommander →</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- DISNEY PASS GOLD -->
+  <div class="card" onclick="window.open('https://www.disneylandparis.com/fr-fr/passes-annuels/','_blank')" style="grid-column:1/-1;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;">
+      <div class="card-image" style="background:linear-gradient(135deg,#c9a84c 0%,#f0d060 50%,#a07830 100%);min-height:380px;padding:0;position:relative;">
+        <div class="badge blue" style="background:#c9a84c;color:#1d1d1f;">🏰 Renouvellement</div>
+        <img src="shure.jpg" alt="Pass Gold Disney" style="width:100%;height:100%;object-fit:contain;padding:40px;"/>
+      </div>
+      <div class="card-body" style="padding:48px;">
+        <div>
+          <div class="card-category">Bien-être & Équilibre</div>
+          <div class="card-title">Pass Gold Disneyland Paris</div>
+          <div class="card-subtitle">Renouvellement · 365 jours · 2 parcs · ~679 € avec -15%</div>
+          <div class="card-desc">
+            C'est mon moment de décompression — après les cours, le stress des examens, les journées de montage. Disney c'est vraiment là où je me ressource, je pense à autre chose et je reviens avec de l'énergie.<br><br>
+            L'année dernière ça m'a vraiment aidé mentalement. C'est pas juste un loisir — c'est ce qui me permet de tenir le rythme sur tout le reste. Des fois on vient en famille voir des spectacles, se balader… c'est le rêve.<br><br>
+            <strong>C'est aussi le cadeau de Délia 🎁</strong> — on le partage ensemble, c'est un renouvellement de l'an dernier.
+          </div>
+          <div class="specs">
+            <span class="spec-pill">365 jours / an</span>
+            <span class="spec-pill">2 parcs inclus</span>
+            <span class="spec-pill">Parking gratuit</span>
+            <span class="spec-pill">PhotoPass inclus</span>
+            <span class="spec-pill">-15% boutiques & restos</span>
+            <span class="spec-pill">Moments Magie en +</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="price">~679 €</div>
+            <div class="price-note">799 € − 15% · disneylandparis.com</div>
+          </div>
+          <a href="https://www.disneylandparis.com/fr-fr/passes-annuels/" target="_blank" class="btn" onclick="event.stopPropagation()">Voir le pass →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHURE MV7+ -->
+  <div class="card" onclick="window.open('https://www.thomann.fr/shure_mv7_plus.htm','_blank')">
+    <div class="card-image shure-bg" style="padding:0;">
+      <div class="badge green">Son broadcast</div>
+      <img src="ugreen.png" alt="Shure MV7+" style="width:100%;height:100%;object-fit:contain;padding:20px;"/>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="card-category">Microphone</div>
+        <div class="card-title">Shure MV7+</div>
+        <div class="card-subtitle">USB-C + XLR · Voice Isolation · Auto Level</div>
+        <div class="card-desc">
+          Le plus important dans une vidéo c'est le son — sans bon son les gens décrochent. La plupart des critiques de mes dernières vidéos c'était sur le son, et même avec mes amis on a passé des soirées entières à essayer d'optimiser le MAONO. Pour de la voix off poussée, on peut rien faire de plus avec lui.<br><br>
+          Le MV7+ je l'ai déjà essayé chez des potes — et c'est vrai que c'est fou. Tous mes potes créateurs l'ont. C'est un micro utilisé pour faire de vrais films. Je vais revendre le MAONO pour participer au cadeau.<br><br>
+          C'est cher, mais c'est un micro qui se garde <strong>10 ans</strong>. Largement rentabilisé.
+        </div>
+        <div class="specs">
+          <span class="spec-pill">Dynamique cardioïde</span>
+          <span class="spec-pill">USB-C + XLR</span>
+          <span class="spec-pill">Voice Isolation IA</span>
+          <span class="spec-pill">Dénoiser temps réel</span>
+          <span class="spec-pill">Bandeau LED tactile</span>
+        </div>
+        <div class="pro-con" style="grid-template-columns:1fr;">
+          <div class="pro-list">
+            <div class="list-title">✦ Points forts</div>
+            <ul>
+              <li>Son broadcast dès la sortie de boîte</li>
+              <li>Dénoiser IA intégré</li>
+              <li>Double sortie USB-C & XLR</li>
+              <li>Utilisé sur de vraies productions</li>
+              <li>Déjà testé — validé personnellement</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="price-block">
+          <div class="price">~259 €</div>
+          <div class="price-note">shure.com/fr-FR</div>
+        </div>
+        <a href="https://www.thomann.fr/shure_mv7_plus.htm" target="_blank" class="btn" onclick="event.stopPropagation()">Voir le produit →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- UGREEN HUB -->
+  <div class="card" onclick="window.open('https://fr.ugreen.com/products/maxidok-station-accueil-thunderbolt-5-10-en-1-ethernet-gigabit-double-affichage-6k-8k','_blank')">
+    <div class="card-image ugreen-bg" style="padding:0;">
+      <div class="badge blue">Thunderbolt 5</div>
+      <img src="disney.png" alt="UGREEN Maxidok TB5" style="width:100%;height:100%;object-fit:cover;"/>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="card-category">Connectique</div>
+        <div class="card-title">UGREEN Maxidok TB5</div>
+        <div class="card-subtitle">10-en-1 · 120 Gbps · Double affichage 6K/8K</div>
+        <div class="card-desc">
+          Un seul câble. Dix ports. Le hub qui permet au Mac mini d'exploiter pleinement ses 3 ports Thunderbolt 5 — NVMe externe à pleine vitesse, deux écrans, Stream Deck, lecteur SD pour importer les cartes mémoire Sony directement, et Ethernet filaire pour les uploads de fichiers lourds.<br><br>
+          Sans Thunderbolt 5 réel, un hub bas de gamme bride la machine entière. Ce modèle UGREEN est la version correcte — vrai TB5 120 Gbps, pas du USB-C déguisé.
+        </div>
+        <div class="specs">
+          <span class="spec-pill">Thunderbolt 5 ×2</span>
+          <span class="spec-pill">120 Gbps</span>
+          <span class="spec-pill">DisplayPort 8K</span>
+          <span class="spec-pill">USB-A ×3 10Gbps</span>
+          <span class="spec-pill">Ethernet Gigabit</span>
+          <span class="spec-pill">SD + TF</span>
+        </div>
+        <div class="pro-con">
+          <div class="pro-list">
+            <div class="list-title">✦ Points forts</div>
+            <ul>
+              <li>Vrai Thunderbolt 5 — pas un fake</li>
+              <li>NVMe externe à vitesse maximale</li>
+              <li>Import carte SD Sony direct</li>
+              <li>30 jours d'essai sans risque</li>
+              <li>Garantie 2 ans UGREEN</li>
+            </ul>
+          </div>
+          <div class="con-list">
+            <div class="list-title">⚠ Points faibles</div>
+            <ul>
+              <li>Modèle récent — peu d'avis disponibles</li>
+              <li>Prix élevé mais justifié</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="price-block">
+          <div class="price">~225 €</div>
+          <div class="price-note">ugreen.com/fr · -25% actuellement</div>
+        </div>
+        <a href="https://fr.ugreen.com/products/maxidok-station-accueil-thunderbolt-5-10-en-1-ethernet-gigabit-double-affichage-6k-8k" target="_blank" class="btn" onclick="event.stopPropagation()">Voir le produit →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRIORITE -->
+<div class="total-section" style="margin-top:0;margin-bottom:20px;">
+  <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;">
+
+    <!-- ANNIVERSAIRE -->
+    <div style="padding:36px 40px;border-bottom:2px solid var(--bg);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">🎂 Liste Anniversaire</div>
+          <h2 style="font-size:22px;font-weight:700;letter-spacing:-0.3px;color:var(--text);">Ce que j'aimerais pour mon anniversaire</h2>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;">~2 774 €</div>
+          <div style="font-size:11px;color:var(--text-3);">Mac mini + Hub + Shure</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+
+        <div style="background:rgba(255,59,48,0.05);border:1px solid rgba(255,59,48,0.15);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:18px;margin-bottom:8px;">⚡</div>
+          <div style="font-size:13px;font-weight:700;color:#ff3b30;margin-bottom:6px;">Mac mini + Hub — précommandez avant le 22/09</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;">Le prix peut augmenter après le 22 septembre — c'est déjà arrivé avec la génération précédente (+250 € du jour au lendemain). Précommandez maintenant pour bloquer le prix.<br><br>Et si vous voulez me l'offrir officiellement en octobre ou même plus tard, c'est littéralement pareil pour moi — c'est même mieux, j'aurai eu le temps de le prendre en main et de l'apprivoiser à la perfection. Je serai très très heureux même sans cadeau le jour J, parce que je sais qu'il arrive.<br><br>💡 <strong>D'ailleurs</strong> — Délia m'a offert une souris Apple qui est vraiment très nulle (elles coûtent cher mais elles sont peu pratiques). Si vous voulez la revendre pour récupérer ~50 € et contribuer, c'est très bien aussi.</div>
+        </div>
+
+        <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:18px;margin-bottom:8px;">🎙️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">Shure MV7+ — cadeau indispensable</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;">C'est pas un bonus — c'est vraiment quelque chose dont j'ai besoin. Je l'ai mis pour l'anniversaire parce qu'avec le Mac mini, j'aurais tout d'un coup et le setup serait complet direct. Mais si c'est trop pour l'anniversaire, vous pouvez le mettre pour Noël — dans les deux cas c'est parfait.</div>
+        </div>
+
+        <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:18px;margin-bottom:8px;">⌨️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">Clavier — à vérifier d'abord</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;">Je sais pas si mon clavier actuel marche avec le Mac mini. On teste d'abord, et si ça marche pas on va à la Fnac ensemble et on revend le mien pour en prendre un adapté.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NOEL -->
+    <div style="padding:36px 40px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--green);margin-bottom:4px;">🎄 Liste Noël</div>
+          <h2 style="font-size:22px;font-weight:700;letter-spacing:-0.3px;color:var(--text);">Ce que j'aimerais pour Noël</h2>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;">~938 €</div>
+          <div style="font-size:11px;color:var(--text-3);">Shure + Pass Gold · ~1 617 € avec pass Délia</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+        <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:18px;margin-bottom:8px;">🎙️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">Shure MV7+ — si pas offert à l'anniversaire</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;">
+            Je sais que tu vas dire "mais on t'a déjà acheté un micro" — et c'est vrai. Mais le MAONO, j'ai tout essayé, vraiment tout. Paramètres, optimisations, on a passé des soirées entières dessus. Les critiques de mes vidéos c'est quasi toujours le son. Les gens disent qu'on m'entend étouffé. C'est le micro, pas les réglages. Il est encore en bon état, on peut le revendre à un bon prix. Le Shure MV7+ c'est le micro que tous mes potes créateurs ont, je l'ai déjà testé chez eux — c'est une autre dimension. USB-C et XLR, il se branche sur notre installation existante. Un achat pour 10 ans.
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,rgba(201,168,76,0.08) 0%,rgba(240,208,96,0.08) 100%);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:18px;margin-bottom:8px;">🏰</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">Pass Gold Disney — moi + Délia</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;">
+            Je sais que tu veux me l'offrir maman et ça me ferait vraiment trop plaisir — c'est mon moment de décompression, ça m'aide énormément mentalement. Mais je te connais — t'aimes pas qu'il y ait qu'un seul cadeau et que je regarde les autres ouvrir.<br><br>Donc si tu veux rajouter quelque chose : on pourrait revendre mon stabilisateur actuel qui est incompatible avec ma Sony A7IV et en prendre un nouveau compatible — ça débloquerait vraiment mes tournages.<br><br>Ou alors — tu te souviens de mon regard en Thaïlande quand je voyais les objectifs de caméra ? J'en ai quelques-uns en tête, à des prix très raisonnables. Dis-moi juste un budget et je te fais le meilleur panier possible. Je serais vraiment hyper heureux avec ça.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PARTICIPATION -->
+<div class="total-section" style="margin-top:0;margin-bottom:20px;">
+  <div style="background:var(--text);border-radius:var(--radius);padding:36px 48px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;">
+    <div style="font-size:48px;">💰</div>
+    <div style="flex:1;min-width:200px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;">Et moi je participe aussi</div>
+      <div style="font-size:20px;font-weight:700;color:white;margin-bottom:10px;">Je commence à débloquer la monétisation YouTube</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;">Je commence à débloquer la monétisation YouTube — pour l'instant je suis à zéro euro, mais j'espère gagner quelque chose d'ici là et mettre une partie pour contribuer. Ce setup c'est vraiment mon outil de travail, pas juste des cadeaux.<br><br><strong style="color:white;">Merci pour tout. 🧡</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOTAL --><!-- TOTAL -->
+<div class="total-section">
+  <div class="total-card">
+    <div class="total-left">
+      <h2>Total général 🎂🎄</h2>
+      <p>Anniversaire + Noël · précommander le Mac mini avant le 22/09</p>
+    </div>
+    <div class="total-right">~3 712 <span>€</span></div>
+  </div>
+</div>
+
+<!-- PETITS CADEAUX -->
+<div class="total-section" style="margin-top:0;">
+  <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:40px 48px;">
+    
+    <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px;">Pour les petits cadeaux</div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;color:var(--text);margin-bottom:8px;">Les idées autour de 50–100 €</h2>
+    <p style="font-size:15px;color:var(--text-2);line-height:1.6;margin-bottom:32px;">Je sais qu'à chaque fois il y a des gens de la famille qui veulent offrir de petits trucs — voilà quelques idées utiles. Ça peut contribuer au clavier pour Mac, ou sinon de l'argent, c'est vraiment ce qui m'aide le plus.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      
+      <!-- CLAVIER -->
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:24px;">
+        <div style="font-size:24px;margin-bottom:12px;">⌨️</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">Un clavier mécanique pour Mac</div>
+        <p style="font-size:14px;color:var(--text-2);line-height:1.6;">Je sais pas encore si mon clavier actuel est compatible avec le Mac mini. Si ça marche, parfait. Sinon, on ira ensemble à la Fnac choisir un clavier mécanique adapté — les petits cadeaux famille peuvent contribuer à ça.</p>
+      </div>
+
+      <!-- ARGENT -->
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:24px;">
+        <div style="font-size:24px;margin-bottom:12px;">💸</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">De l'argent — le cadeau le plus utile</div>
+        <p style="font-size:14px;color:var(--text-2);line-height:1.6;">Je gère mon argent sérieusement — pas de gaspillage. Ça me sert à travailler avec les bonnes personnes, financer des tournages (batteries, matériel de location, droits d'entrée comme au Louvre…), et mettre de côté pour les prochains projets. Chaque euro va directement dans la création.</p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
